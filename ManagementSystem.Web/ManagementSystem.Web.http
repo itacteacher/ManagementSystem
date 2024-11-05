@@ -1,0 +1,128 @@
+@ManagementSystem.Web_HostAddress = http://localhost:5290/api
+
+### Users Controller ###
+
+### Get all users
+GET {{ManagementSystem.Web_HostAddress}}/users
+Accept: application/json
+
+###
+
+### Create a user
+POST {{ManagementSystem.Web_HostAddress}}/users
+Content-Type: application/json
+{
+    "username": "newuser",
+    "email": "newuser@example.com",
+    "firstName": "New",
+    "lastName": "User"
+}
+
+###
+
+### Delete a user by Id
+DELETE {{ManagementSystem.Web_HostAddress}}/users/{id}
+
+###
+
+### Update a user by Id
+PUT {{ManagementSystem.Web_HostAddress}}/users/{id}
+Content-Type: application/json
+{
+    "id": "{id}",
+    "username": "updateduser",
+    "email": "updateduser@example.com",
+    "firstName": "Updated",
+    "lastName": "User"
+}
+
+###
+
+### Get all tickets assigned to a user by user Id
+GET {{ManagementSystem.Web_HostAddress}}/users/{id}/tickets
+Accept: application/json
+
+###
+
+
+### Projects Controller ###
+
+### Get all projects
+GET {{ManagementSystem.Web_HostAddress}}/projects
+Accept: application/json
+
+###
+
+### Create a project
+POST {{ManagementSystem.Web_HostAddress}}/projects
+Content-Type: application/json
+{
+    "name": "New Project",
+    "description": "Description of the new project",
+    "start_date": "2024-11-01T00:00:00",
+    "end_date": "2024-12-31T00:00:00"
+}
+
+###
+
+### Delete a certain project
+DELETE {{ManagementSystem.Web_HostAddress}}/projects/{id}
+
+###
+
+### Update a project by Id
+PUT {{ManagementSystem.Web_HostAddress}}/projects/{id}
+Content-Type: application/json
+{
+    "id": "{id}",
+    "name": "Updated Project",
+    "description": "Updated description",
+    "start_date": "2024-11-01T00:00:00",
+    "end_date": "2025-01-01T00:00:00"
+}
+
+###
+
+### Get all tickets related to a project by project Id
+GET {{ManagementSystem.Web_HostAddress}}/projects/{id}/tickets
+Accept: application/json
+
+###
+
+
+### Tickets Controller ###
+
+### Get details of a specific ticket by Id
+GET {{ManagementSystem.Web_HostAddress}}/tickets/{ticketId}
+Accept: application/json
+
+###
+
+### Create a ticket
+POST {{ManagementSystem.Web_HostAddress}}/tickets
+Content-Type: application/json
+{
+    "title": "New Ticket",
+    "description": "Details about the new ticket",
+    "due_date": "2024-12-01T00:00:00",
+    "status": "NotStarted",
+    "project_id": "{projectId}",
+    "user_id": "{userId}"
+}
+
+###
+
+### Update a ticket by Id
+PUT {{ManagementSystem.Web_HostAddress}}/tickets/{id}
+Content-Type: application/json
+{
+    "ticketId": "{id}",
+    "title": "Updated Ticket",
+    "description": "Updated description",
+    "due_date": "2024-12-15T00:00:00",
+    "status": "InProgress",
+    "project_id": "{projectId}",
+    "user_id": "{userId}"
+}
+
+###
