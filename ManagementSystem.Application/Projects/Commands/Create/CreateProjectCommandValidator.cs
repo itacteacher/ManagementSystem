@@ -1,9 +1,8 @@
 ﻿using FluentValidation;
 using ManagementSystem.Application.Common.Interfaces;
-using ManagementSystem.Application.Projects.Commands;
 using Microsoft.EntityFrameworkCore;
 
-namespace ManagementSystem.Application.Projects.Validators;
+namespace ManagementSystem.Application.Projects.Commands.Create;
 
 public class CreateProjectCommandValidator : AbstractValidator<CreateProjectCommand>
 {

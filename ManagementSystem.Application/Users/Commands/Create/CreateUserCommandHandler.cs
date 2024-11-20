@@ -1,22 +1,13 @@
-﻿using FluentValidation;
-using ManagementSystem.Application.Common.Interfaces;
+﻿using ManagementSystem.Application.Common.Interfaces;
 using ManagementSystem.Domain.Entities;
 using MediatR;
 
-namespace ManagementSystem.Application.Users.Commands;
-
-public record CreateUserCommand : IRequest<Guid>
-{
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-    public string Username { get; set; }
-    public string Email { get; set; }
-}
+namespace ManagementSystem.Application.Users.Commands.Create;
 
 public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Guid>
 {
     private readonly IApplicationDbContext _context;
-    public CreateUserCommandHandler (IApplicationDbContext context, IValidator<CreateUserCommand> validator)
+    public CreateUserCommandHandler (IApplicationDbContext context)
     {
         _context = context;
     }

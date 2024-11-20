@@ -1,13 +1,10 @@
-﻿using ManagementSystem.Application.Common.Interfaces;
+﻿using Ardalis.GuardClauses;
+using ManagementSystem.Application.Common.Interfaces;
 using ManagementSystem.Application.Tickets.Queries.DTOs;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace ManagementSystem.Application.Tickets.Queries;
-public record GetTicketDetailsQuery : IRequest<TicketDetailsDTO>
-{
-    public Guid Id { get; set; }
-}
+namespace ManagementSystem.Application.Tickets.Queries.GetById;
 
 public class GetTicketDetailsQueryHandler : IRequestHandler<GetTicketDetailsQuery, TicketDetailsDTO>
 {
@@ -21,7 +18,7 @@ public class GetTicketDetailsQueryHandler : IRequestHandler<GetTicketDetailsQuer
     public async Task<TicketDetailsDTO> Handle (GetTicketDetailsQuery request,
         CancellationToken cancellationToken)
     {
-        var ticketDetails = await _context.Tickets
+        var entity = await _context.Tickets
             .Where(t => t.Id == request.Id)
             .Select(t => new TicketDetailsDTO
             {
@@ -35,11 +32,8 @@ public class GetTicketDetailsQueryHandler : IRequestHandler<GetTicketDetailsQuer
                 ProjectName = t.Project.Name
             }).FirstOrDefaultAsync(cancellationToken);
 
-        if (ticketDetails == null)
-        {
-            throw new Exception($"Ticket with Id {request.Id} was not found.");
-        }
+        Guard.Against.NotFound(request.Id, entity);
 
-        return ticketDetails;
+        return entity;
     }
 }

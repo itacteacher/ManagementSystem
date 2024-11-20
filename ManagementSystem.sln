@@ -3,18 +3,22 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManagementSystem.Web", "ManagementSystem.Web\ManagementSystem.Web.csproj", "{F1CDFA42-8651-4CA0-BE7A-62B1449119B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManagementSystem.Web", "ManagementSystem.Web\ManagementSystem.Web.csproj", "{F1CDFA42-8651-4CA0-BE7A-62B1449119B5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B25ED686-D93A-4A34-81C7-A0D4B6CEE8E7}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManagementSystem.Domain", "ManagementSystem.Domain\ManagementSystem.Domain.csproj", "{20A54A4E-0A75-49DE-A057-75596C059156}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManagementSystem.Domain", "ManagementSystem.Domain\ManagementSystem.Domain.csproj", "{20A54A4E-0A75-49DE-A057-75596C059156}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManagementSystem.Application", "ManagementSystem.Application\ManagementSystem.Application.csproj", "{30C23D72-3B80-4501-AA1F-B2C7E07F7E67}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManagementSystem.Application", "ManagementSystem.Application\ManagementSystem.Application.csproj", "{30C23D72-3B80-4501-AA1F-B2C7E07F7E67}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManagementSystem.Infrastructure", "ManagementSystem.Infrastructure\ManagementSystem.Infrastructure.csproj", "{475EA24C-5671-4493-BA87-1AA19719CA61}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManagementSystem.Infrastructure", "ManagementSystem.Infrastructure\ManagementSystem.Infrastructure.csproj", "{475EA24C-5671-4493-BA87-1AA19719CA61}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{1FAA453F-AED7-47A1-88C2-74FB5882A9F5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManagementSystem.Application.Tests", "ManagementSystem.Application.Tests\ManagementSystem.Application.Tests.csproj", "{FBDD03C6-9B17-4C38-9564-0E94CA7AA6CC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,9 +42,16 @@ Global
 		{475EA24C-5671-4493-BA87-1AA19719CA61}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{475EA24C-5671-4493-BA87-1AA19719CA61}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{475EA24C-5671-4493-BA87-1AA19719CA61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBDD03C6-9B17-4C38-9564-0E94CA7AA6CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBDD03C6-9B17-4C38-9564-0E94CA7AA6CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBDD03C6-9B17-4C38-9564-0E94CA7AA6CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBDD03C6-9B17-4C38-9564-0E94CA7AA6CC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FBDD03C6-9B17-4C38-9564-0E94CA7AA6CC} = {1FAA453F-AED7-47A1-88C2-74FB5882A9F5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4C46210D-7FED-4DC5-B38E-7D30BB708958}

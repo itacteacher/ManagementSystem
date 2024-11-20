@@ -1,5 +1,7 @@
-﻿using ManagementSystem.Application.Tickets.Queries;
-using ManagementSystem.Application.Users.Commands;
+﻿using ManagementSystem.Application.Tickets.Queries.GetByUserId;
+using ManagementSystem.Application.Users.Commands.Create;
+using ManagementSystem.Application.Users.Commands.Delete;
+using ManagementSystem.Application.Users.Commands.Update;
 using ManagementSystem.Application.Users.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -31,7 +33,7 @@ public class UsersController : ControllerBase
 
         if (users is null or [])
         {
-            return NotFound("No user found!");
+            return NotFound("User was not found.");
         }
 
         return Ok(users);
@@ -51,7 +53,7 @@ public class UsersController : ControllerBase
 
         if (userId == Guid.Empty)
         {
-            return BadRequest("An error occurred!");
+            return BadRequest("User was not created.");
         }
 
         return Ok(userId);
@@ -68,9 +70,16 @@ public class UsersController : ControllerBase
     {
         var command = new DeleteUserCommand(id);
 
-        await _mediator.Send(command);
+        try
+        {
+            await _mediator.Send(command);
 
-        return NoContent();
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return NotFound(ex.Message);
+        }
     }
 
     /// <summary>
@@ -80,7 +89,6 @@ public class UsersController : ControllerBase
     /// <param name="command">The command containing updated user data.</param>
     /// <response code="204">User successfully updated.</response>
     /// <response code="400">If the request is invalid or Ids do not match.</response>
-    /// <response code="404">If the user is not found.</response>
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> UpdateUser (Guid id, [FromBody] UpdateUserCommand command)
     {
@@ -94,10 +102,6 @@ public class UsersController : ControllerBase
             await _mediator.Send(command);
             return NoContent();
         }
-        catch (Exception ex) when (ex.Message.Contains("was not found"))
-        {
-            return NotFound(ex.Message);
-        }
         catch (Exception ex)
         {
             return BadRequest(ex.Message);
@@ -110,17 +114,11 @@ public class UsersController : ControllerBase
     /// <param name="userId">The Id of the user.</param>
     /// <returns>A list of tickets assigned to the specified user.</returns>
     /// <response code="200">Returns the list of tickets for the user.</response>
-    /// <response code="404">If no tickets are found for the user.</response>
     [HttpGet("{userId:guid}/tickets")]
     public async Task<IActionResult> GetTicketsByUserId (Guid userId)
     {
         var query = new GetTicketsByUserIdQuery(userId);
         var result = await _mediator.Send(query);
-
-        if (result == null)
-        {
-            return NotFound($"No tickets found for user with Id {userId}");
-        }
 
         return Ok(result);
     }

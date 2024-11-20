@@ -1,9 +1,9 @@
 ﻿using FluentValidation;
 using ManagementSystem.Application.Common.Interfaces;
-using ManagementSystem.Application.Users.Commands;
 using Microsoft.EntityFrameworkCore;
 
-namespace ManagementSystem.Application.Users.Validators;
+namespace ManagementSystem.Application.Users.Commands.Create;
+
 public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
 {
     private readonly IApplicationDbContext _context;

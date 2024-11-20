@@ -1,16 +1,8 @@
-﻿using ManagementSystem.Application.Common.Interfaces;
+﻿using Ardalis.GuardClauses;
+using ManagementSystem.Application.Common.Interfaces;
 using MediatR;
 
-namespace ManagementSystem.Application.Projects.Commands;
-
-public record UpdateProjectCommand : IRequest
-{
-    public Guid Id { get; init; }
-    public string Name { get; init; }
-    public string Description { get; init; }
-    public DateTime StartDate { get; init; }
-    public DateTime EndDate { get; init; }
-}
+namespace ManagementSystem.Application.Projects.Commands.Update;
 
 public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand>
 {
@@ -25,10 +17,7 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand>
     {
         var entity = await _context.Projects.FindAsync([request.Id], cancellationToken);
 
-        if (entity == null)
-        {
-            throw new Exception($"Entity with Id = {request.Id} was not found.");
-        }
+        Guard.Against.NotFound(request.Id, entity);
 
         entity.Name = request.Name;
         entity.Description = request.Description;

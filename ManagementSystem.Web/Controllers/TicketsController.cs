@@ -1,5 +1,6 @@
-﻿using ManagementSystem.Application.Tickets.Commands;
-using ManagementSystem.Application.Tickets.Queries;
+﻿using ManagementSystem.Application.Tickets.Commands.Create;
+using ManagementSystem.Application.Tickets.Commands.Update;
+using ManagementSystem.Application.Tickets.Queries.GetById;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,7 +32,7 @@ public class TicketsController : ControllerBase
 
         if (result == null)
         {
-            return NotFound();
+            return NotFound("Ticket was not found.");
         }
 
         return Ok(result);
@@ -47,14 +48,16 @@ public class TicketsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateTicket ([FromBody] CreateTicketCommand command)
     {
-        var ticketId = await _mediator.Send(command);
-
-        if (ticketId == Guid.Empty)
+        try
         {
-            return BadRequest("An error occurred!");
-        }
+            var ticketId = await _mediator.Send(command);
 
-        return Ok(ticketId);
+            return Ok(ticketId);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
     /// <summary>
@@ -78,7 +81,7 @@ public class TicketsController : ControllerBase
             await _mediator.Send(command);
             return NoContent();
         }
-        catch (Exception ex) when (ex.Message.Contains("was not found"))
+        catch (Exception ex)
         {
             return NotFound(ex.Message);
         }

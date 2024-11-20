@@ -3,31 +3,22 @@ using ManagementSystem.Application.Tickets.Queries.DTOs;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace ManagementSystem.Application.Tickets.Queries;
-public record GetTicketsByUserIdQuery : IRequest<List<TicketDTO>>
-{
-    public Guid UserId { get; set; }
+namespace ManagementSystem.Application.Tickets.Queries.GetByProjectId;
 
-    public GetTicketsByUserIdQuery (Guid userId)
-    {
-        UserId = userId;
-    }
-}
-
-public class GetTicketsByUserIdQueryHandler : IRequestHandler<GetTicketsByUserIdQuery, List<TicketDTO>>
+public class GetTicketsByProjectIdQueryHandler : IRequestHandler<GetTicketsByProjectIdQuery, List<TicketDTO>>
 {
     private readonly IApplicationDbContext _context;
 
-    public GetTicketsByUserIdQueryHandler (IApplicationDbContext context)
+    public GetTicketsByProjectIdQueryHandler (IApplicationDbContext context)
     {
         _context = context;
     }
 
-    public async Task<List<TicketDTO>> Handle (GetTicketsByUserIdQuery request,
+    public async Task<List<TicketDTO>> Handle (GetTicketsByProjectIdQuery request,
         CancellationToken cancellationToken)
     {
         return await _context.Tickets
-            .Where(t => t.UserId == request.UserId)
+            .Where(t => t.ProjectId == request.ProjectId)
             .Select(t => new TicketDTO
             {
                 Id = t.Id,
@@ -36,7 +27,6 @@ public class GetTicketsByUserIdQueryHandler : IRequestHandler<GetTicketsByUserId
                 StartDate = t.StartDate,
                 DueDate = t.DueDate,
                 Status = t.Status
-            })
-            .ToListAsync(cancellationToken);
+            }).ToListAsync(cancellationToken);
     }
 }

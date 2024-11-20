@@ -1,12 +1,10 @@
 ﻿using FluentValidation;
 using MediatR;
-
 using ValidationException = ManagementSystem.Application.Common.Exceptions.ValidationException;
 
 namespace ManagementSystem.Application.Common.Behaviour;
 
-public class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : notnull
+public class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : notnull
 {
     private readonly IEnumerable<IValidator<TRequest>> _validators;
 

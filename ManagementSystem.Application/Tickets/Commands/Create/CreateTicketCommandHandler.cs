@@ -1,18 +1,10 @@
-﻿using ManagementSystem.Application.Common.Interfaces;
+﻿using Ardalis.GuardClauses;
+using ManagementSystem.Application.Common.Interfaces;
 using ManagementSystem.Domain.Entities;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
-namespace ManagementSystem.Application.Tickets.Commands;
-public record CreateTicketCommand : IRequest<Guid>
-{
-    public string Name { get; set; }
-    public string Description { get; set; }
-    public DateTime? StartDate { get; set; }
-    public DateTime? DueDate { get; set; }
-
-    public Guid ProjectId { get; set; }
-    public Guid? UserId { get; set; }
-}
+namespace ManagementSystem.Application.Tickets.Commands.Create;
 
 public class CreateTicketCommandHandler : IRequestHandler<CreateTicketCommand, Guid>
 {
@@ -25,6 +17,17 @@ public class CreateTicketCommandHandler : IRequestHandler<CreateTicketCommand, G
 
     public async Task<Guid> Handle (CreateTicketCommand request, CancellationToken cancellationToken)
     {
+        var project = await _context.Projects
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.Id == request.ProjectId, cancellationToken);
+
+        Guard.Against.NotFound(request.ProjectId, project);
+
+        if (request.DueDate.HasValue && request.DueDate.Value >= project.EndDate)
+        {
+            Guard.Against.OutOfRange(request.DueDate.Value, nameof(request.DueDate), project.StartDate, project.EndDate);
+        }
+
         var ticket = new Ticket
         {
             Name = request.Name,

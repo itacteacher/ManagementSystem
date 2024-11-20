@@ -1,9 +1,8 @@
-﻿using ManagementSystem.Application.Common.Interfaces;
+﻿using Ardalis.GuardClauses;
+using ManagementSystem.Application.Common.Interfaces;
 using MediatR;
 
-namespace ManagementSystem.Application.Projects.Commands;
-
-public record DeleteProjectCommand (Guid Id) : IRequest;
+namespace ManagementSystem.Application.Projects.Commands.Delete;
 
 public class DeleteProjectCommandHandler : IRequestHandler<DeleteProjectCommand>
 {
@@ -17,10 +16,7 @@ public class DeleteProjectCommandHandler : IRequestHandler<DeleteProjectCommand>
     {
         var entity = await _context.Projects.FindAsync([request.Id], cancellationToken);
 
-        if (entity == null)
-        {
-            throw new Exception($"Entity with Id = {request.Id} was not found");
-        }
+        Guard.Against.NotFound(request.Id, entity);
 
         _context.Projects.Remove(entity);
 

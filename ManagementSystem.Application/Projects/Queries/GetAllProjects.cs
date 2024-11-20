@@ -9,6 +9,7 @@ public record GetAllProjectsQuery : IRequest<List<ProjectDTO>>;
 public class GetAllProjectsQueryHandler : IRequestHandler<GetAllProjectsQuery, List<ProjectDTO>>
 {
     private readonly IApplicationDbContext _context;
+
     public GetAllProjectsQueryHandler (IApplicationDbContext context)
     {
         _context = context;

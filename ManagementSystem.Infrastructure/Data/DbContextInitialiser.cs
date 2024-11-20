@@ -1,15 +1,18 @@
 ﻿using ManagementSystem.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace ManagementSystem.Infrastructure.Data;
 
 public class DbContextInitialiser
 {
     private readonly ApplicationDbContext _context;
+    private readonly ILogger<DbContextInitialiser> _logger;
 
-    public DbContextInitialiser (ApplicationDbContext context)
+    public DbContextInitialiser (ApplicationDbContext context, ILogger<DbContextInitialiser> logger)
     {
         _context = context;
+        _logger = logger;
     }
 
     public async Task InitialiseAsync ()
@@ -20,6 +23,7 @@ public class DbContextInitialiser
         }
         catch (Exception ex)
         {
+            _logger.LogError("An error occured while applying migrations.");
             throw;
         }
     }
@@ -104,6 +108,7 @@ public class DbContextInitialiser
         }
         catch (Exception ex)
         {
+            _logger.LogError("An error occured while seeding the database.");
             throw;
         }
     }

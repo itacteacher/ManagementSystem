@@ -1,6 +1,8 @@
-﻿using ManagementSystem.Application.Projects.Commands;
+﻿using ManagementSystem.Application.Projects.Commands.Create;
+using ManagementSystem.Application.Projects.Commands.Delete;
+using ManagementSystem.Application.Projects.Commands.Update;
 using ManagementSystem.Application.Projects.Queries;
-using ManagementSystem.Application.Tickets.Queries;
+using ManagementSystem.Application.Tickets.Queries.GetByProjectId;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,14 +29,14 @@ public class ProjectsController : ControllerBase
     public async Task<ActionResult<List<ProjectDTO>>> GetAllProjects ()
     {
         var query = new GetAllProjectsQuery();
-        var projects = await _mediator.Send(query);
+        var result = await _mediator.Send(query);
 
-        if (projects is null or [])
+        if (result is null or [])
         {
-            return NotFound("No project found!");
+            return NotFound("Project was not found.");
         }
 
-        return Ok(projects);
+        return Ok(result);
     }
 
     /// <summary>
@@ -51,7 +53,7 @@ public class ProjectsController : ControllerBase
 
         if (projectId == Guid.Empty)
         {
-            return BadRequest("An error occured!");
+            return BadRequest("Project was not created.");
         }
 
         return Ok(projectId);
@@ -68,9 +70,16 @@ public class ProjectsController : ControllerBase
     {
         var command = new DeleteProjectCommand(id);
 
-        await _mediator.Send(command);
+        try
+        {
+            await _mediator.Send(command);
 
-        return NoContent();
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return NotFound(ex.Message);
+        }
     }
 
     /// <summary>
@@ -80,7 +89,6 @@ public class ProjectsController : ControllerBase
     /// <param name="command">The command containing updated project data.</param>
     /// <response code="204">Project successfully updated.</response>
     /// <response code="400">If the request is invalid or Ids do not match.</response>
-    /// <response code="404">If the project is not found.</response>
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> UpdateProject (Guid id, [FromBody] UpdateProjectCommand command)
     {
@@ -94,10 +102,6 @@ public class ProjectsController : ControllerBase
             await _mediator.Send(command);
             return NoContent();
         }
-        catch (Exception ex) when (ex.Message.Contains("was not found"))
-        {
-            return NotFound(ex.Message);
-        }
         catch (Exception ex)
         {
             return BadRequest(ex.Message);
@@ -110,17 +114,11 @@ public class ProjectsController : ControllerBase
     /// <param name="projectId">The Id of the project to retrieve tickets for.</param>
     /// <returns>A list of tickets associated with the project.</returns>
     /// <response code="200">Returns the list of tickets for the specified project.</response>
-    /// <response code="404">If no tickets are found for the project.</response>
     [HttpGet("{projectId:guid}/tickets")]
     public async Task<IActionResult> GetTicketsByProjectId (Guid projectId)
     {
         var query = new GetTicketsByProjectIdQuery(projectId);
         var result = await _mediator.Send(query);
-
-        if (result == null)
-        {
-            return NotFound($"No tickets found for project with Id {projectId}");
-        }
 
         return Ok(result);
     }

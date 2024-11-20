@@ -1,9 +1,8 @@
-﻿using ManagementSystem.Application.Common.Interfaces;
+﻿using Ardalis.GuardClauses;
+using ManagementSystem.Application.Common.Interfaces;
 using MediatR;
 
-namespace ManagementSystem.Application.Users.Commands;
-
-public record DeleteUserCommand (Guid Id) : IRequest;
+namespace ManagementSystem.Application.Users.Commands.Delete;
 
 public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand>
 {
@@ -15,12 +14,9 @@ public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand>
 
     public async Task Handle (DeleteUserCommand request, CancellationToken cancellationToken)
     {
-        var entity = await _context.Users.FindAsync([request.Id], cancellationToken);
+        var entity = await _context.Users.FindAsync(request.Id, cancellationToken);
 
-        if (entity == null)
-        {
-            throw new Exception($"Entity with Id = {request.Id} was not found");
-        }
+        Guard.Against.NotFound(request.Id, entity);
 
         _context.Users.Remove(entity);
 

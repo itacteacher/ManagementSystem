@@ -42,8 +42,7 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
             return;
         }
 
-        foreach (var entry in context.ChangeTracker
-        .Entries<BaseAuditableEntity>())
+        foreach (var entry in context.ChangeTracker.Entries<BaseAuditableEntity>())
         {
             if (entry.State is EntityState.Added or EntityState.Modified
               || entry.HasChangedOwnedEntities())
@@ -69,8 +68,8 @@ public static class Extensions
     public static bool HasChangedOwnedEntities (this EntityEntry entry)
     {
         return entry.References.Any(r =>
-        r.TargetEntry != null &&
-        r.TargetEntry.Metadata.IsOwned() &&
-        (r.TargetEntry.State == EntityState.Added || r.TargetEntry.State == EntityState.Modified));
+            r.TargetEntry != null &&
+            r.TargetEntry.Metadata.IsOwned() &&
+            (r.TargetEntry.State == EntityState.Added || r.TargetEntry.State == EntityState.Modified));
     }
 }

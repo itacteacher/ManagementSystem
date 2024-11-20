@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
-using ManagementSystem.Application.Projects.Commands;
 
-namespace ManagementSystem.Application.Projects.Validators;
+namespace ManagementSystem.Application.Projects.Commands.Update;
 
 public class UpdateProjectCommandValidator : AbstractValidator<UpdateProjectCommand>
 {
