@@ -1,4 +1,6 @@
 ﻿using ManagementSystem.Domain.Entities;
+using ManagementSystem.Domain.Enums;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -8,11 +10,19 @@ public class DbContextInitialiser
 {
     private readonly ApplicationDbContext _context;
     private readonly ILogger<DbContextInitialiser> _logger;
+    private readonly UserManager<User> _userManager;
+    private readonly RoleManager<IdentityRole<Guid>> _roleManager;
 
-    public DbContextInitialiser (ApplicationDbContext context, ILogger<DbContextInitialiser> logger)
+    public DbContextInitialiser (ApplicationDbContext context,
+        ILogger<DbContextInitialiser> logger,
+        UserManager<User> userManager,
+        RoleManager<IdentityRole<Guid>> roleManager)
     {
         _context = context;
         _logger = logger;
+
+        _userManager = userManager;
+        _roleManager = roleManager;
     }
 
     public async Task InitialiseAsync ()
@@ -32,76 +42,37 @@ public class DbContextInitialiser
     {
         try
         {
-            var adminId = Guid.NewGuid();
-
-            if (!_context.Users.Any())
+            foreach (var roleName in Enum.GetNames(typeof(ApplicationRole)))
             {
-                _context.Users.AddRange(
-                    new User
-                    {
-                        Id = adminId,
-                        Username = "admin",
-                        Email = "admin@example.com",
-                        FirstName = "Administrator",
-                        LastName = "User",
-                        CreatedBy = null,
-                        CreatedAt = DateTime.Now,
-                        LastModifiedBy = null,
-                        LastModifiedAt = DateTime.Now
-                    },
-                    new User
-                    {
-                        Id = Guid.NewGuid(),
-                        Username = "jdoe",
-                        Email = "jdoe@example.com",
-                        FirstName = "John",
-                        LastName = "Doe",
-                        CreatedBy = adminId,
-                        CreatedAt = DateTime.Now,
-                        LastModifiedBy = adminId,
-                        LastModifiedAt = DateTime.Now
-                    },
-                    new User
-                    {
-                        Id = Guid.NewGuid(),
-                        Username = "asmith",
-                        Email = "asmith@example.com",
-                        FirstName = "Alice",
-                        LastName = "Smith",
-                        CreatedBy = adminId,
-                        CreatedAt = DateTime.Now,
-                        LastModifiedBy = adminId,
-                        LastModifiedAt = DateTime.Now
-                    });
+                if (!await _roleManager.RoleExistsAsync(roleName))
+                {
+                    await _roleManager.CreateAsync(new IdentityRole<Guid> { Name = roleName });
+                }
             }
 
-            if (!_context.Projects.Any())
+            var adminEmail = "admin@test.com";
+            var adminUser = await _userManager.FindByEmailAsync(adminEmail);
+
+            if (adminUser == null)
             {
-                _context.Projects.AddRange(
-                    new Project
-                    {
-                        Id = Guid.NewGuid(),
-                        Name = "Project Alpha",
-                        Description = "A test project for Alpha team",
-                        StartDate = DateTime.UtcNow.AddDays(-30),
-                        EndDate = DateTime.UtcNow.AddDays(60),
-                        CreatedBy = adminId,
-                        CreatedAt = DateTime.Now,
-                        LastModifiedBy = adminId,
-                        LastModifiedAt = DateTime.Now
-                    },
-                    new Project
-                    {
-                        Id = Guid.NewGuid(),
-                        Name = "Project Beta",
-                        Description = "A test project for Beta team",
-                        StartDate = DateTime.UtcNow,
-                        EndDate = DateTime.UtcNow.AddDays(90),
-                        CreatedBy = adminId,
-                        CreatedAt = DateTime.Now,
-                        LastModifiedBy = adminId,
-                        LastModifiedAt = DateTime.Now
-                    });
+                adminUser = new User
+                {
+                    UserName = "admin",
+                    Email = adminEmail,
+                    FirstName = "Administrator",
+                    LastName = "User"
+                };
+
+                var result = await _userManager.CreateAsync(adminUser, "Admin123!");
+
+                if (result.Succeeded)
+                {
+                    await _userManager.AddToRoleAsync(adminUser, ApplicationRole.Admin.ToString());
+                }
+                else
+                {
+                    _logger.LogError("Admin creation failed");
+                }
             }
 
             await _context.SaveChangesAsync();

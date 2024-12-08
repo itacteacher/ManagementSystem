@@ -1,10 +1,12 @@
 ﻿using ManagementSystem.Application.Common.Interfaces;
 using ManagementSystem.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace ManagementSystem.Infrastructure.Data;
 
-public class ApplicationDbContext : DbContext, IApplicationDbContext
+public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>, IApplicationDbContext
 {
     public ApplicationDbContext (DbContextOptions<ApplicationDbContext> options) : base(options)
     {

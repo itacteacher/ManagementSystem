@@ -32,6 +32,6 @@ public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
 
     private async Task<bool> BeUniqueUsername (string username, CancellationToken cancellationToken)
     {
-        return !await _context.Users.AnyAsync(u => u.Username == username, cancellationToken);
+        return !await _context.Users.AnyAsync(u => u.UserName == username, cancellationToken);
     }
 }

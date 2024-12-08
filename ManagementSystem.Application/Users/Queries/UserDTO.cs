@@ -9,12 +9,4 @@ public class UserDTO
     public string Username { get; set; }
 
     public string Email { get; set; }
-
-    public DateTime CreatedAt { get; set; }
-
-    public Guid? CreatedBy { get; set; }
-
-    public DateTime LastModifiedAt { get; set; }
-
-    public Guid? LastModifiedBy { get; set; }
 }

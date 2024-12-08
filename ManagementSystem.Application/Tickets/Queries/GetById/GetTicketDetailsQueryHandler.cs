@@ -28,7 +28,7 @@ public class GetTicketDetailsQueryHandler : IRequestHandler<GetTicketDetailsQuer
                 StartDate = t.StartDate,
                 DueDate = t.DueDate,
                 Status = t.Status,
-                Username = t.User != null ? t.User.Username : string.Empty,
+                Username = t.User != null ? t.User.UserName! : string.Empty,
                 ProjectName = t.Project.Name
             }).FirstOrDefaultAsync(cancellationToken);
 
