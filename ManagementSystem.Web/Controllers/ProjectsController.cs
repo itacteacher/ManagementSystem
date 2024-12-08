@@ -4,12 +4,14 @@ using ManagementSystem.Application.Projects.Commands.Update;
 using ManagementSystem.Application.Projects.Queries;
 using ManagementSystem.Application.Tickets.Queries.GetByProjectId;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ManagementSystem.Web.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(Roles = "Admin")]
 public class ProjectsController : ControllerBase
 {
     private readonly IMediator _mediator;

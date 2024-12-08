@@ -1,5 +1,6 @@
 ﻿using ManagementSystem.Application.Common.Interfaces;
 using ManagementSystem.Domain.Entities;
+using ManagementSystem.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,8 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
     public DbSet<Ticket> Tickets { get; set; }
     public DbSet<Team> Teams { get; set; }
     public DbSet<TeamMember> TeamMembers { get; set; }
+
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
 
     protected override void OnModelCreating (ModelBuilder builder)
     {
@@ -50,5 +53,14 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
             .WithMany()
             .HasForeignKey(tm => tm.UserId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<RefreshToken>()
+            .HasIndex(rt => rt.Token)
+            .IsUnique();
+
+        builder.Entity<RefreshToken>()
+            .HasOne(rt => rt.User)
+            .WithMany()
+            .HasForeignKey(rt => rt.UserId);
     }
 }

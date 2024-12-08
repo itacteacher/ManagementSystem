@@ -60,8 +60,25 @@ public class AuthController : ControllerBase
         }
 
         var roles = await _userManager.GetRolesAsync(user);
-        var token = _tokenProvider.GenerateJwtToken(user, roles);
 
-        return Ok(new { Token = token });
+        var token = _tokenProvider.GenerateJwtToken(user, roles);
+        var refreshToken = await _tokenProvider.GenerateRefreshToken(user.Id);
+
+        return Ok(new { Token = token, RefreshToken = refreshToken });
+    }
+
+    [HttpPost("refresh-token")]
+    public async Task<IActionResult> RefreshToken ([FromBody] RefreshTokenModel model)
+    {
+        try
+        {
+            var (newJwtToken, newRefreshToken) = await _tokenProvider.RefreshTokens(model.RefreshToken);
+
+            return Ok(new { Token = newJwtToken, RefreshToken = newRefreshToken });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { Error = ex.Message });
+        }
     }
 }
