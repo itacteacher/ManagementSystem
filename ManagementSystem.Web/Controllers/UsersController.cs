@@ -1,4 +1,6 @@
-﻿using ManagementSystem.Application.Tickets.Queries.GetByUserId;
+﻿using ManagementSystem.Application.Common.Models;
+using ManagementSystem.Application.Tickets.Queries.GetByUserId;
+using ManagementSystem.Application.Users;
 using ManagementSystem.Application.Users.Commands.Create;
 using ManagementSystem.Application.Users.Commands.Delete;
 using ManagementSystem.Application.Users.Commands.Update;
@@ -37,6 +39,34 @@ public class UsersController : ControllerBase
         }
 
         return Ok(users);
+    }
+
+    [HttpGet("paginated")]
+    public Task<PaginatedList<UserDTO>> GetUsersWithPagination ([FromQuery] GetPaginatedUsersQuery query)
+    {
+        return _mediator.Send(query);
+    }
+
+    [HttpGet("filter")]
+    public async Task<ActionResult<List<UserDTO>>> GetUsersWithFilter ([FromQuery] UserFilter filter)
+    {
+        var query = new GetFilteredUsersQuery { Filter = filter };
+
+        try
+        {
+            var users = await _mediator.Send(query);
+
+            if (users is null)
+            {
+                return NotFound("Users was not found.");
+            }
+
+            return Ok(users);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
     /// <summary>
