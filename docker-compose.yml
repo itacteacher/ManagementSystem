@@ -1,0 +1,29 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ManagementSystem.Web/Dockerfile
+    container_name: ManagementSystem.WebApi
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production 
+      - ASPNETCORE_HTTP_PORTS=8000
+      - ConnectionStrings__DefaultConnection=Server=db,1433;Database=ManagementSystemProd;User=sa;Password=StrongP$1234;TrustServerCertificate=True;
+    ports:
+      - "5000:8080"
+    depends_on:
+      - db
+
+  db:
+    image: mcr.microsoft.com/mssql/server:latest
+    container_name: database
+    ports:
+      - "1400:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "StrongPa$w0rd"
+      MSSQL_PID: "Express"
+    volumes:
+      - mssql_data:/var/opt/mssql
+
+volumes:
+  mssql_data:
