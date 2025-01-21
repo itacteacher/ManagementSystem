@@ -70,6 +70,14 @@ public class UsersController : ControllerBase
         }
     }
 
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetUserById (Guid id)
+    {
+        var query = new GetUserByIdQuery(id);
+        var user = await _mediator.Send(query);
+        return Ok(user);
+    }
+
     /// <summary>
     /// Create a new user.
     /// </summary>
