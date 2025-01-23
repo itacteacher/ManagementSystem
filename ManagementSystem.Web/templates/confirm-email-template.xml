@@ -1,0 +1,14 @@
+﻿<EmailTemplates>
+  <Template Name="ConfirmEmail">
+    <Subject>Confirm Your Email</Subject>
+    <Body>
+      <![CDATA[
+                Hello {{UserName}},
+                <br />
+                Please confirm your email by clicking the link below:
+                <br />
+                <a href="{{ConfirmationLink}}">Confirm Email</a>
+            ]]>
+    </Body>
+  </Template>
+</EmailTemplates>

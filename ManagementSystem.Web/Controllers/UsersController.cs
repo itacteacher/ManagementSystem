@@ -5,6 +5,7 @@ using ManagementSystem.Application.Users.Commands.Create;
 using ManagementSystem.Application.Users.Commands.Delete;
 using ManagementSystem.Application.Users.Commands.Update;
 using ManagementSystem.Application.Users.Queries;
+using ManagementSystem.Web.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -69,6 +70,14 @@ public class UsersController : ControllerBase
         }
     }
 
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetUserById (Guid id)
+    {
+        var query = new GetUserByIdQuery(id);
+        var user = await _mediator.Send(query);
+        return Ok(user);
+    }
+
     /// <summary>
     /// Create a new user.
     /// </summary>
@@ -120,22 +129,18 @@ public class UsersController : ControllerBase
     /// <response code="204">User successfully updated.</response>
     /// <response code="400">If the request is invalid or Ids do not match.</response>
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> UpdateUser (Guid id, [FromBody] UpdateUserCommand command)
+    public async Task<IActionResult> UpdateUser (Guid id, [FromBody] UserUpdateRequest request)
     {
-        if (id != command.Id)
+        var command = new UpdateUserCommand
         {
-            return BadRequest("User Id in URL does not match Id in request body.");
-        }
+            Id = id,
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            Email = request.Email
+        };
 
-        try
-        {
-            await _mediator.Send(command);
-            return NoContent();
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        await _mediator.Send(command);
+        return NoContent();
     }
 
     /// <summary>

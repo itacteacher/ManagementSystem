@@ -1,6 +1,8 @@
 ﻿using ManagementSystem.Application.Common.Interfaces;
 using ManagementSystem.Infrastructure.Data;
 using ManagementSystem.Infrastructure.Data.Interceptors;
+using ManagementSystem.Infrastructure.Emails;
+using ManagementSystem.Infrastructure.fileStorage;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
@@ -28,6 +30,12 @@ public static class DependencyInjection
         services.AddScoped<DbContextInitialiser>();
 
         services.AddSingleton(TimeProvider.System);
+
+        services.AddScoped<IFileStorageService, FileStorageService>();
+
+        services.AddScoped<IEmailSender, EmailSender>();
+
+        services.AddScoped<EmailTemplateService>();
 
         return services;
     }
