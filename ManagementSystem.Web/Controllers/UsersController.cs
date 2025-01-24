@@ -1,7 +1,6 @@
 ﻿using ManagementSystem.Application.Common.Models;
 using ManagementSystem.Application.Tickets.Queries.GetByUserId;
 using ManagementSystem.Application.Users;
-using ManagementSystem.Application.Users.Commands.Create;
 using ManagementSystem.Application.Users.Commands.Delete;
 using ManagementSystem.Application.Users.Commands.Update;
 using ManagementSystem.Application.Users.Queries;
@@ -76,26 +75,6 @@ public class UsersController : ControllerBase
         var query = new GetUserByIdQuery(id);
         var user = await _mediator.Send(query);
         return Ok(user);
-    }
-
-    /// <summary>
-    /// Create a new user.
-    /// </summary>
-    /// <param name="command">The command to create a user.</param>
-    /// <returns>The Id of the created user.</returns>
-    /// <response code="200">Returns the Id of the newly created user.</response>
-    /// <response code="400">If the request is invalid.</response>
-    [HttpPost]
-    public async Task<ActionResult<Guid>> CreateUser ([FromBody] CreateUserCommand command)
-    {
-        var userId = await _mediator.Send(command);
-
-        if (userId == Guid.Empty)
-        {
-            return BadRequest("User was not created.");
-        }
-
-        return Ok(userId);
     }
 
     /// <summary>

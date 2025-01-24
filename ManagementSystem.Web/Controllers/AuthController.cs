@@ -1,9 +1,12 @@
-﻿using ManagementSystem.Domain.Entities;
+﻿using ManagementSystem.Application.Common.Interfaces;
+using ManagementSystem.Application.Emails;
+using ManagementSystem.Domain.Entities;
 using ManagementSystem.Domain.Enums;
 using ManagementSystem.Infrastructure;
 using ManagementSystem.Infrastructure.Emails;
 using ManagementSystem.Infrastructure.Identity;
 using ManagementSystem.Web.Models;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,16 +17,14 @@ public class AuthController : ControllerBase
 {
     private readonly UserManager<User> _userManager;
     private readonly TokenProvider _tokenProvider;
-    private readonly IEmailSender _emailSender;
-    private readonly EmailTemplateService _emailTemplateService;
+    private readonly IMediator _mediator;
 
     public AuthController (UserManager<User> userManager, TokenProvider tokenProvider, IEmailSender emailSender,
-    EmailTemplateService emailTemplateService)
+    EmailTemplateService emailTemplateService, IMediator mediator)
     {
         _userManager = userManager;
         _tokenProvider = tokenProvider;
-        _emailSender = emailSender;
-        _emailTemplateService = emailTemplateService;
+        _mediator = mediator;
     }
 
     [HttpPost("register")]
@@ -47,9 +48,13 @@ public class AuthController : ControllerBase
         await _userManager.AddToRoleAsync(user, ApplicationRole.User.ToIdentityRole());
 
         var emailConfirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-        var confirmEmailUrl = Url.Action("ConfirmEmail", "Auth", new { userId = user.Id, token = emailConfirmationToken }, Request.Scheme);
+        var confirmEmailUrl = Url.Action("ConfirmEmail", "Auth", new
+        {
+            userId = user.Id,
+            token = emailConfirmationToken
+        }, Request.Scheme);
 
-        var emailSent = await SendEmailAsync(
+        var command = new SendEmailCommand(
             user.Email,
             "ConfirmEmail",
             new Dictionary<string, string>
@@ -58,6 +63,13 @@ public class AuthController : ControllerBase
                 { "ConfirmationLink", confirmEmailUrl }
             });
 
+        var emailSent = await _mediator.Send(command);
+
+        if (!emailSent)
+        {
+            return BadRequest("Error sending confirmation email.");
+        }
+
         return Ok(new { Message = "User registered successfully. Please confirm your email." });
     }
 
@@ -65,12 +77,14 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> ConfirmEmail (string userId, string token)
     {
         var user = await _userManager.FindByIdAsync(userId);
+
         if (user == null)
         {
             return BadRequest("User not found.");
         }
 
         var result = await _userManager.ConfirmEmailAsync(user, token);
+
         if (!result.Succeeded)
         {
             return BadRequest("Email confirmation failed.");
@@ -119,18 +133,50 @@ public class AuthController : ControllerBase
         }
     }
 
-    private async Task<bool> SendEmailAsync (string recipientEmail, string templateName, Dictionary<string, string> replacements)
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPassword ([FromBody] ForgotPasswordModel model)
     {
-        var template = _emailTemplateService.GetTemplateByName(templateName);
+        var user = await _userManager.FindByEmailAsync(model.Email);
 
-        if (template == null)
+        if (user == null)
         {
-            return false;
+            return BadRequest("User not found.");
         }
 
-        var body = EmailTemplateHelper.PopulateTemplate(template.Body, replacements);
+        var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+        var resetPasswordUrl = Url.Action("ResetPassword", "Auth", new { token = resetToken, email = user.Email }, Request.Scheme);
 
-        await _emailSender.SendEmailAsync(recipientEmail, template.Subject, body);
-        return true;
+        var command = new SendEmailCommand(
+            user.Email,
+            "ResetPassword",
+            new Dictionary<string, string>
+            {
+                { "UserName", user.UserName },
+                { "ResetLink", resetPasswordUrl }
+            });
+
+        await _mediator.Send(command);
+
+        return Ok(new { Message = "Password reset email sent." });
+    }
+
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword ([FromBody] ResetPasswordModel model)
+    {
+        var user = await _userManager.FindByEmailAsync(model.Email);
+
+        if (user == null)
+        {
+            return BadRequest("User not found.");
+        }
+
+        var result = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
+
+        if (!result.Succeeded)
+        {
+            return BadRequest(result.Errors);
+        }
+
+        return Ok(new { Message = "Password reset successful." });
     }
 }
