@@ -11,8 +11,6 @@ public static class DependencyInjection
         services.AddExceptionHandler<CustomExceptionHandler>();
         services.AddScoped<IUser, CurrentUserService>();
         services.AddHttpContextAccessor();
-        //builder.Services.Configure<ApiBehaviorOptions>(options =>
-        //options.SuppressModelStateInvalidFilter = true);
 
         return services;
     }

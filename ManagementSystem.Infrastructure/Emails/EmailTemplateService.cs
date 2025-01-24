@@ -8,7 +8,7 @@ public class EmailTemplateService
 
     public EmailTemplateService (IConfiguration configuration)
     {
-        _templateFilePath = configuration["EmailTemplates:ConfirmEmail"]!;
+        _templateFilePath = configuration["EmailTemplates"]!;
     }
 
     public EmailTemplate GetTemplateByName (string templateName)
