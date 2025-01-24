@@ -33,6 +33,7 @@ public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, FullUse
             Id = user.Id,
             FirstName = user.FirstName,
             LastName = user.LastName,
+            Username = user.UserName,
             Email = user.Email
         };
     }

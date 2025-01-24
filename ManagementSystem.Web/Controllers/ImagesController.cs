@@ -1,11 +1,13 @@
 ﻿using ManagementSystem.Application.Images.Commands;
 using ManagementSystem.Application.Images.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ManagementSystem.Web.Controllers;
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class ImagesController : ControllerBase
 {
     private readonly IMediator _mediator;

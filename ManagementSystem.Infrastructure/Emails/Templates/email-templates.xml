@@ -11,4 +11,15 @@
             ]]>
     </Body>
   </Template>
+  <Template Name="OrdinaryEmail">
+    <Subject>Test email</Subject>
+    <Body>
+      <![CDATA[
+                Hello {{UserName}},
+                <br />
+                This is a test email
+                <br />
+            ]]>
+    </Body>
+  </Template>
 </EmailTemplates>
